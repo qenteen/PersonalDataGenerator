@@ -37,15 +37,20 @@ namespace PersonalDataGenerator
             string firstName = _parser.FirstNames[sex][_rng.Next(_parser.FirstNames[sex].Count)];
             string lastName = _parser.LastNames[_rng.Next(_parser.LastNames.Count)];
             if (sex == 'F') lastName += 'а';
-            int age = 20 + _rng.Next(71);
             string city = _parser.Cities[_rng.Next(_parser.Cities.Count)];
             string street = _parser.Streets[_rng.Next(_parser.Streets.Count)];
+
+            int age = 20 + _rng.Next(71);
+            int year = DateTime.Now.Year - age;
+            int month = 1 + _rng.Next(12);
+            int day = 1 + _rng.Next(28);  // Для простоты
+            DateTime birth = new DateTime(year, month, day);
 
             return new Person()
                 {
                     Name = lastName + " " + firstName,
                     Sex = sex,
-                    Age = age,
+                    Birth = birth,
                     Country = "Россия",
                     Address = city + ", " + street
                 };
@@ -54,7 +59,7 @@ namespace PersonalDataGenerator
         public void WritePeopleToXml(string path)
         {
             var doc = new XDocument();
-            var root = new XElement("People");
+            var root = new XElement("people");
 
             int id = 0;
             foreach (var p in People)
@@ -62,11 +67,11 @@ namespace PersonalDataGenerator
                 id++;
                 XElement person =
                     new XElement("person", new XAttribute("id", id),
-                        new XElement("Name", p.Name),
-                        new XElement("Sex", p.Sex),
-                        new XElement("Age", p.Age),
-                        new XElement("Country", p.Country),
-                        new XElement("Address", p.Address)
+                        new XElement("name", p.Name),
+                        new XElement("sex", p.Sex),
+                        new XElement("birth", p.Birth.ToShortDateString()),
+                        new XElement("country", p.Country),
+                        new XElement("address", p.Address)
                     );
                 root.Add(person);
             }
